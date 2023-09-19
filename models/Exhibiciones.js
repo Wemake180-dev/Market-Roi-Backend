@@ -1,0 +1,59 @@
+import mongoose from 'mongoose'
+
+const exhibicionesSchema = mongoose.Schema({
+    nombre:{
+        type: String,
+        trim: true,
+        require: true,
+    },
+    descripcion: {
+        type: String,
+        trim: true,
+        require: true,
+    },
+    marca: {
+        type: String,
+        trim: true,
+        require: true,
+    },
+    ubicacion: {
+        type: String,
+        trim: true,
+        require: true,
+    },
+    desde_fecha: {
+        type: Date,
+        default: Date.now(),
+    },
+    hasta_fecha: {
+        type: Date,
+        default: Date.now(),
+    },
+    mercado: {
+        type: String,
+        trim: true,
+        require: true,
+    },
+    precio_alquiler :{
+        type: Number,
+        require: true,
+    },
+    creador: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Usuario",
+    },
+    mercaderistas:[
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Usuario",
+        },
+    ],
+}, {
+    
+    timestamps: true,
+
+   }
+);
+
+const Exhibicion = mongoose.model("Exhibicion", exhibicionesSchema, "exhibiciones");
+export default Exhibicion;
