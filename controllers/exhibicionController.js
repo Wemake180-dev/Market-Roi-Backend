@@ -47,7 +47,7 @@ const obtenerExhibicion = async (req, res) => {
             pedidos,
         });
         
-        res.json(exhibicion);
+        
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Hubo un error al obtener la exhibición" });
