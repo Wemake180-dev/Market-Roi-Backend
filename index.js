@@ -18,6 +18,7 @@ conectarDB();
 //Configurar CORS
 const whitelist = [
     process.env.FRONTEND_URL,
+    process.env.FRONTEND_URL_VERCEL,
     '186.73.164.156'
 ];
 
