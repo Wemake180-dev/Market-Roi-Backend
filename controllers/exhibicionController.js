@@ -40,12 +40,10 @@ const obtenerExhibicion = async (req, res) => {
             return res.status(401).json({ msg: error.message });
         }
 
-        //Obtener los pedidos de la exhibicion
-        const pedidos = await Pedido.find().where('exhibicion').equals(exhibicion._id);
-        res.json({
-            exhibicion,
-            pedidos,
-        });
+   
+        res.json(
+            exhibicion,  
+        );
         
         
     } catch (error) {
