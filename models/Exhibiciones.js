@@ -23,11 +23,11 @@ const exhibicionesSchema = mongoose.Schema({
     },
     desde_fecha: {
         type: Date,
-        default: Date.now(),
+        require: true,
     },
     hasta_fecha: {
         type: Date,
-        default: Date.now(),
+        require: true,
     },
     mercado: {
         type: String,
