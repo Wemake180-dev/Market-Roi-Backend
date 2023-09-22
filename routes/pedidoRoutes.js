@@ -5,13 +5,17 @@ import{
     eliminarPedido,
     cambiarEstado,
     obtenerPedidosExhibicion,
+    obtenerPedidos,
 } from "../controllers/pedido.Controller.js";
 import checkAuth from "../middleware/checkAuth.js";
 
 
 const router = express.Router();
 
-router.post("/", checkAuth, agregarPedido);
+router
+    .route("/")
+    .get(checkAuth, obtenerPedidos)
+    .post(checkAuth, agregarPedido);
 router
     .route("/:id")
     .get(checkAuth, obtenerPedido)

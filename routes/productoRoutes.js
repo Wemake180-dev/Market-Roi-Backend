@@ -5,13 +5,18 @@ import {
     obtenerProducto,
     actualizarProducto,
     eliminarProducto,
+    obtenerProductos,
 } from "../controllers/productoController.js"
 
 import checkAuth from "../middleware/checkAuth.js";
 
 const router = express.Router();
 
-router.post("/", checkAuth, agregarProducto);
+
+router
+    .route("/")
+    .get(checkAuth, obtenerProductos)
+    .post(checkAuth, agregarProducto);
 router
     .route("/:id")
     .get(checkAuth, obtenerProducto)

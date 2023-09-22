@@ -11,6 +11,12 @@ const PedidoSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Exhibicion', 
     },
+
+        creador: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Usuarios', 
+    },
+    
     productos: [
         {
             producto: {

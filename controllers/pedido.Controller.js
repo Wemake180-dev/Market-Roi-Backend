@@ -25,12 +25,24 @@ const calcularTotalYProductos = async (productos) => {
             subtotal
         };
     }));
+    totalPedido = parseFloat(totalPedido.toFixed(2));
+
     return { totalPedido, productosConPrecio };
 }
+
+
 
 const agregarPedido = async (req, res, next) => {
     try {
         const { exhibicion, productos } = req.body;
+
+        const pedido = new Pedido({
+            exhibicion,
+            productos: [],
+            total: 0,
+            creador: req.usuario._id,
+        });
+
         const existeExhibicion = await Exhibicion.findById(exhibicion);
         
         if (!existeExhibicion) {
@@ -39,12 +51,9 @@ const agregarPedido = async (req, res, next) => {
         
         const { totalPedido, productosConPrecio } = await calcularTotalYProductos(productos);
         
-        const pedido = new Pedido({
-            exhibicion,
-            productos: productosConPrecio,
-            total: totalPedido,
-        });
-        
+        pedido.productos = productosConPrecio;
+        pedido.total = totalPedido;
+
         const pedidoAlmacenado = await pedido.save();
         
         res.json(pedidoAlmacenado);
@@ -66,6 +75,18 @@ const obtenerPedido = async (req, res) => {
         return res.status(404).json({msg: error.message});
     }
     res.json(pedido);
+};
+
+
+const obtenerPedidos = async (req, res) => {
+    try {
+        const pedidos = await Pedido.find().where("creador").equals(req.usuario);
+        res.json(pedidos);
+        
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Hubo un error al obtener las exhibiciones" });   
+    }
 };
 
 
@@ -120,5 +141,6 @@ export {
     obtenerPedido,
     eliminarPedido,
     cambiarEstado,
-    obtenerPedidosExhibicion
+    obtenerPedidosExhibicion,
+    obtenerPedidos
 }
