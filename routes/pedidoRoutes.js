@@ -4,6 +4,7 @@ import{
     obtenerPedido,
     eliminarPedido,
     cambiarEstado,
+    obtenerPedidosExhibicion,
 } from "../controllers/pedido.Controller.js";
 import checkAuth from "../middleware/checkAuth.js";
 
@@ -16,5 +17,6 @@ router
     .get(checkAuth, obtenerPedido)
     .delete(checkAuth, eliminarPedido);
 router.post("/estado/:id",checkAuth, cambiarEstado);
+router.get("/exhibicion/:id", checkAuth, obtenerPedidosExhibicion)
 
 export default router;

@@ -62,10 +62,33 @@ const obtenerPedido = async (req, res) => {
     
 
     if(!pedido){
-        const error = new Error("Pedido no encontrada");
+        const error = new Error("Pedido no encontrado");
         return res.status(404).json({msg: error.message});
     }
     res.json(pedido);
+};
+
+
+const obtenerPedidosExhibicion = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        // Realiza la consulta en la base de datos para encontrar pedidos con la exhibición específica
+        const pedidos = await Pedido.find({ exhibicion: id });
+
+        // Verifica si se encontraron pedidos
+        if (!pedidos || pedidos.length === 0) {
+            return res.status(404).json({ msg: 'No se encontraron pedidos para la exhibición especificada' });
+        }
+
+        // Envía la respuesta con los pedidos encontrados
+        res.status(200).json(pedidos);
+    } catch (error) {
+        // Maneja errores, en caso de que algo salga mal durante la consulta a la base de datos
+        console.error(`Error al obtener los pedidos: ${error}`);
+        res.status(500).json({ msg: 'Error del servidor' });
+    }
+    
 };
 
 
@@ -96,5 +119,6 @@ export {
     agregarPedido,
     obtenerPedido,
     eliminarPedido,
-    cambiarEstado
+    cambiarEstado,
+    obtenerPedidosExhibicion
 }
