@@ -23,14 +23,18 @@ const whitelist = [
 ];
 
 const corsOptions = {
-    origin: function(origin, callback) {
-        if (!origin || whitelist.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error("Error de Cors"));
-        }
-    },
+    origin: true, // Publico
 };
+
+// const corsOptions = {
+//     origin: function(origin, callback) {
+//         if (!origin || whitelist.includes(origin)) {
+//             callback(null, true);
+//         } else {
+//             callback(new Error("Error de Cors"));
+//         }
+//     },
+// };
 
 app.use(cors(corsOptions));
 
