@@ -81,11 +81,16 @@ const obtenerPedido = async (req, res) => {
 const obtenerPedidos = async (req, res) => {
     try {
         const pedidos = await Pedido.find().where("creador").equals(req.usuario);
+
+        if (pedidos.length === 0) {
+            return res.status(404).json({ message: "No has creado pedidos aun." });
+        }
+
         res.json(pedidos);
         
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Hubo un error al obtener las exhibiciones" });   
+        res.status(500).json({ message: "Hubo un error al obtener los pedidos" });   
     }
 };
 

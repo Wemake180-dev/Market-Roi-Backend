@@ -34,15 +34,20 @@ const obtenerProducto = async (req, res) => {
     }
 };
 
-//TODO: Verificar funcionamiento y agregar la ruta  
+
 const obtenerProductos = async (req, res) => {
     try {
         const productos = await Producto.find();
+
+        if (productos.length === 0) {
+            return res.status(404).json({ message: "No se encontraron productos." });
+        }
+        
         res.json(productos);
         
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Hubo un error al obtener las exhibiciones" });   
+        res.status(500).json({ message: "Hubo un error al obtener los productos" });   
     }
 };
 
