@@ -58,6 +58,8 @@ const agregarPedido = async (req, res, next) => {
 const obtenerPedido = async (req, res) => {
     const { id } = req.params;
     const pedido = await Pedido.findById(id);
+    console.log(id)
+    
 
     if(!pedido){
         const error = new Error("Pedido no encontrada");
