@@ -6,7 +6,7 @@ import usuarioRoutes from './routes/usuarioRoutes.js'
 import exhibicionRoutes from './routes/exhibicionRoutes.js'
 import productoRoutes from './routes/productoRoutes.js';
 import pedidoRoutes from './routes/pedidoRoutes.js';
-
+import mercadoRoutes from './routes/mercadoRoutes.js';
 
 const app = express();
 app.use(express.json());
@@ -43,6 +43,8 @@ app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/exhibiciones", exhibicionRoutes);
 app.use("/api/productos", productoRoutes);
 app.use("/api/pedidos", pedidoRoutes);
+app.use("/api/mercados", mercadoRoutes);
+
 
 const PORT = process.env.PORT || 4000;
 
