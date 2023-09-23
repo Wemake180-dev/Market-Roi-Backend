@@ -12,9 +12,9 @@ const PedidoSchema = new mongoose.Schema({
         ref: 'Exhibicion', 
     },
 
-        creador: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Usuario', 
+    creador: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Usuario', 
     },
     
     productos: [

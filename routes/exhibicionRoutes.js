@@ -27,4 +27,5 @@ router.post("/eliminar-mercaderista/:id", checkAuth, eliminarMercaderista);
 
 
 
+
 export default router;

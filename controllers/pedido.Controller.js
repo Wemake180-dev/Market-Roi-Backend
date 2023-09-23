@@ -88,8 +88,6 @@ const obtenerPedido = async (req, res) => {
     }
 };
 
-
-
 const obtenerPedidos = async (req, res) => {
     try {
         const pedidos = await Pedido.find().where("creador").equals(req.usuario);

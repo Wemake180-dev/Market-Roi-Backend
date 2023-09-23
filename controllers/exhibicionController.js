@@ -15,13 +15,19 @@ const obtenerExhibiciones = async (req, res) => {
 
 const nuevaExhibicion = async (req, res) => {
     const exhibicion = new Exhibicion(req.body)
-    exhibicion.creador = req.usuario._id
+
+    if (!req.usuario || !req.usuario._id) {
+        return res.status(400).json({ msg: 'ID de usuario inválido' });
+    }
+
+    exhibicion.creador = req.usuario._id;
 
     try {
         const exhibicionAlmacenada = await exhibicion.save()
-        res.json(exhibicionAlmacenada);
+        res.status(201).json(exhibicionAlmacenada);
     } catch (error) {
         console.log(error)
+        res.status(500).json({ msg: 'Hubo un error al crear la exhibición' })
     }
 };
 
