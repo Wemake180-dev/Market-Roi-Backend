@@ -14,7 +14,7 @@ const PedidoSchema = new mongoose.Schema({
 
         creador: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Usuarios', 
+        ref: 'Usuario', 
     },
     
     productos: [
@@ -31,16 +31,16 @@ const PedidoSchema = new mongoose.Schema({
                 default: 1
             },
                 precioUnitario: {
-                type: mongoose.Types.Decimal128
+                type: Number,
             },
                 subtotal: {
-                type: mongoose.Types.Decimal128
+                type: Number,
             }
         }
     ],
 
     total: {
-        type: mongoose.Types.Decimal128,
+        type: Number,
         default: 0,
     },
 

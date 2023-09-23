@@ -39,12 +39,12 @@ const exhibicionesSchema = mongoose.Schema({
         require: true,
     },
     creador: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Number,
         ref: "Usuario",
     },
     mercaderistas:[
         {
-            type: mongoose.Schema.Types.ObjectId,
+            type: Number,
             ref: "Usuario",
         },
     ],

@@ -1,4 +1,5 @@
 import Exhibicion from "../models/Exhibiciones.js";
+import Usuario from "../models/Usuario.js";
 import Producto from "../models/Productos.js"
 import Pedido from "../models/Pedidos.js";
 
@@ -65,17 +66,28 @@ const agregarPedido = async (req, res, next) => {
 
 
 const obtenerPedido = async (req, res) => {
-    const { id } = req.params;
-    const pedido = await Pedido.findById(id);
-    console.log(id)
-    
+    try {
+        const { id } = req.params;
+        
+        // Utilizar populate() para incluir la información completa de la exhibición y usuario
+        const pedido = await Pedido.findById(id)
+            .populate('exhibicion', '-createdAt -updatedAt')
+            .populate('creador', '-password -confirmado -token -createdAt -updatedAt')
+            .exec();
 
-    if(!pedido){
-        const error = new Error("Pedido no encontrado");
-        return res.status(404).json({msg: error.message});
+        
+        if (!pedido) {
+            const error = new Error("Pedido no encontrado");
+            return res.status(404).json({ msg: error.message });
+        }
+        
+        res.json(pedido);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: "Error interno del servidor" });
     }
-    res.json(pedido);
 };
+
 
 
 const obtenerPedidos = async (req, res) => {
