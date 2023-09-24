@@ -24,12 +24,12 @@ const ProductoSchema = new mongoose.Schema({
         required: true,
     },
     precio_costo: {
-        type: mongoose.Types.Decimal128,
+        type: Number,
         trim: true,
         required: true,
     },
     precio_venta: {
-        type: mongoose.Types.Decimal128,
+        type: Number,
         trim: true,
         required: true,
     },
