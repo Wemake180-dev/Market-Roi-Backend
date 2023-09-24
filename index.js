@@ -2,11 +2,14 @@ import  express  from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import conectarDB from "./config/db.js";
+import {upload} from './helpers/uploads.js'
 import usuarioRoutes from './routes/usuarioRoutes.js'
 import exhibicionRoutes from './routes/exhibicionRoutes.js'
 import productoRoutes from './routes/productoRoutes.js';
 import pedidoRoutes from './routes/pedidoRoutes.js';
 import mercadoRoutes from './routes/mercadoRoutes.js';
+import AWS from 'aws-sdk';
+
 
 const app = express();
 app.use(express.json());
@@ -14,6 +17,17 @@ app.use(express.json());
 dotenv.config();
 
 conectarDB();
+
+//configurar AWS
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: 'us-east-1' 
+});
+
+const s3 = new AWS.S3();
+
+
 
 //Configurar CORS
 const whitelist = [

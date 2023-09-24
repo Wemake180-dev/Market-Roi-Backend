@@ -24,7 +24,7 @@ const PedidoSchema = new mongoose.Schema({
                 ref: 'Producto', 
             },
             nombre:{
-                type: String
+                type: String,
             },
             cantidad: {
                 type: Number,
@@ -42,6 +42,9 @@ const PedidoSchema = new mongoose.Schema({
     total: {
         type: Number,
         default: 0,
+    },
+    imagen: {
+        type: String,
     },
 
     estado: {

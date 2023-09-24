@@ -1,6 +1,7 @@
 import Exhibicion from "../models/Exhibiciones.js";
 import Pedido from "../models/Pedidos.js"
 
+
 const obtenerExhibiciones = async (req, res) => {
     try {
         const exhibiciones = await Exhibicion.find().where("creador").equals(req.usuario);
@@ -14,22 +15,39 @@ const obtenerExhibiciones = async (req, res) => {
 
 
 const nuevaExhibicion = async (req, res) => {
-    const exhibicion = new Exhibicion(req.body)
+    // Crear un nuevo documento de exhibición con los datos del cuerpo de la solicitud
+    const exhibicion = new Exhibicion(req.body);
 
+    // Verificar si se proporcionó un ID de usuario válido
     if (!req.usuario || !req.usuario._id) {
         return res.status(400).json({ msg: 'ID de usuario inválido' });
     }
 
+    // Asignar el creador de la exhibición
     exhibicion.creador = req.usuario._id;
 
+    // Si se ha subido una imagen, guarda su ruta en el documento
+    if (!req.file || !req.file.location) {
+        return res.status(400).json({ msg: 'La imagen es obligatoria' });
+    } else {
+        exhibicion.imagen = req.file.location;
+    }
+
     try {
-        const exhibicionAlmacenada = await exhibicion.save()
+        // Guardar el nuevo documento de exhibición en la base de datos
+        const exhibicionAlmacenada = await exhibicion.save();
+
+        // Responder con el documento almacenado
         res.status(201).json(exhibicionAlmacenada);
     } catch (error) {
-        console.log(error)
-        res.status(500).json({ msg: 'Hubo un error al crear la exhibición' })
+        // Registrar cualquier error que ocurra durante el proceso
+        console.log(error);
+
+        // Responder con un mensaje de error
+        res.status(500).json({ msg: 'Hubo un error al crear la exhibición' });
     }
 };
+
 
 const obtenerExhibicion = async (req, res) => {
     try {

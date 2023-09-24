@@ -9,6 +9,7 @@ import {
     eliminarMercaderista,
 } from '../controllers/exhibicionController.js';
 import checkAuth from '../middleware/checkAuth.js';
+import upload from "../helpers/uploads.js";
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ const router = express.Router();
 router
     .route("/")
     .get(checkAuth, obtenerExhibiciones)
-    .post(checkAuth, nuevaExhibicion);
+    .post(checkAuth, upload.single('imagen'), nuevaExhibicion);
 router 
     .route("/:id")
     .get(checkAuth, obtenerExhibicion)
