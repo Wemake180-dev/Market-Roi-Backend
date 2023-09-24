@@ -2,9 +2,12 @@ import Exhibicion from "../models/Exhibiciones.js";
 import Usuario from "../models/Usuario.js";
 import Producto from "../models/Productos.js"
 import Pedido from "../models/Pedidos.js";
+import upload from "../helpers/uploads.js";
 
-const calcularTotalYProductos = async (productos) => {
+const calcularTotalYProductos = async (productos) => {  //Cambiar el nombre de productos para probar desde postman
     let totalPedido = 0;
+    //const productos = JSON.parse(productosStr);
+
     const productosConPrecio = await Promise.all(productos.map(async (item) => {
         const productoDB = await Producto.findById(item.id);
         
@@ -31,38 +34,60 @@ const calcularTotalYProductos = async (productos) => {
     return { totalPedido, productosConPrecio };
 }
 
-
-
 const agregarPedido = async (req, res, next) => {
+
+    // Usamos un try-catch para manejar errores de manera efectiva
     try {
-        const { exhibicion, productos } = req.body;
+        // Utilizamos el middleware de multer para manejar la subida del archivo
+        // 'imagen' es el nombre del campo que contendrá el archivo en la petición HTTP
+            upload.single('imagen')(req, res, async (err) => {
+            // Si multer encuentra un error durante la subida, respondemos con un error 500
+            if (err) {
+                return res.status(500).json({ msg: "Error al cargar la imagen" });
+            }
+            
+            // Creamos un nuevo objeto Pedido
+            const pedido = new Pedido();
+            
+            // Si se ha subido una imagen, almacenamos su ubicación en el objeto pedido
+            if (req.file && req.file.location) {
+                pedido.imagen = req.file.location;
+            }
 
-        const pedido = new Pedido({
-            exhibicion,
-            productos: [],
-            total: 0,
-            creador: req.usuario._id,
+            // A partir de aquí, tu lógica existente para manejar los datos del pedido
+            const { exhibicion, productos } = req.body;
+
+            // Buscar si la exhibición existe
+            const existeExhibicion = await Exhibicion.findById(exhibicion);
+            
+            // Si la exhibición no existe, devolvemos un error 404
+            if (!existeExhibicion) {
+                return res.status(404).json({ msg: "La Exhibición no existe" });
+            }
+            
+            // Calculamos el total y los productos con precio
+            const { totalPedido, productosConPrecio } = await calcularTotalYProductos(productos);
+
+            // Almacenamos estos valores en el objeto pedido
+            pedido.productos = productosConPrecio;
+            pedido.total = totalPedido;
+            pedido.exhibicion = exhibicion;
+            pedido.creador = req.usuario._id;  // Suponiendo que tienes req.usuario._id desde algún middleware de autenticación
+
+            // Guardamos el pedido en la base de datos
+            const pedidoAlmacenado = await pedido.save();
+            
+            // Devolvemos el pedido almacenado como respuesta
+            res.json(pedidoAlmacenado);
         });
-
-        const existeExhibicion = await Exhibicion.findById(exhibicion);
         
-        if (!existeExhibicion) {
-            return res.status(404).json({ msg: "La Exhibición no existe" });
-        }
-        
-        const { totalPedido, productosConPrecio } = await calcularTotalYProductos(productos);
-        
-        pedido.productos = productosConPrecio;
-        pedido.total = totalPedido;
-
-        const pedidoAlmacenado = await pedido.save();
-        
-        res.json(pedidoAlmacenado);
     } catch (error) {
+        // Si algo sale mal, imprimimos el error en la consola y pasamos el error al próximo middleware
         console.error(error);
-        next(error); 
+        next(error);
     }
 };
+
 
 
 const obtenerPedido = async (req, res) => {
