@@ -63,12 +63,10 @@ const obtenerExhibicion = async (req, res) => {
             const error = new Error("Accion no valida");
             return res.status(401).json({ msg: error.message });
         }
-
    
         res.json(
             exhibicion,  
         );
-        
         
     } catch (error) {
         console.error(error);

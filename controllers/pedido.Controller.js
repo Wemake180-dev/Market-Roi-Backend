@@ -4,9 +4,11 @@ import Producto from "../models/Productos.js"
 import Pedido from "../models/Pedidos.js";
 import upload from "../helpers/uploads.js";
 
-const calcularTotalYProductos = async (productos) => {  //Cambiar el nombre de productos para probar desde postman
+const calcularTotalYProductos = async (productosStr) => {  //Cambiar el nombre de productos a productosStr para probar desde postman
     let totalPedido = 0;
-    //const productos = JSON.parse(productosStr);
+    console.log(productosStr)
+    const productos = JSON.parse(productosStr);
+    console.log(productos)
 
     const productosConPrecio = await Promise.all(productos.map(async (item) => {
         const productoDB = await Producto.findById(item.id);
