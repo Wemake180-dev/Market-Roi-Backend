@@ -40,6 +40,10 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+app.get('/', function(req, res) {
+  res.send('Bienvenido');
+});
+
 //Routing
 app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/exhibiciones", exhibicionRoutes);
