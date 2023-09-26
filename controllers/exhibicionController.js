@@ -1,5 +1,6 @@
 import Exhibicion from "../models/Exhibiciones.js";
 import Pedido from "../models/Pedidos.js"
+import {eliminarImagenDeS3} from "../helpers/uploads.js"
 
 
 const obtenerExhibiciones = async (req, res) => {
@@ -114,23 +115,32 @@ const eliminarExhibicion = async (req, res) => {
     const { id } = req.params;
     const exhibicion = await Exhibicion.findById(id);
 
-    if(!exhibicion){
+    if (!exhibicion) {
         const error = new Error("No Existe");
         return res.status(404).json({ msg: error.message });
     }
-    
-    if(exhibicion.creador.toString() !== req.usuario._id.toString()){
+
+    if (exhibicion.creador.toString() !== req.usuario._id.toString()) {
         const error = new Error("Accion no valida");
         return res.status(401).json({ msg: error.message });
     }
 
     try {
+        // Eliminar la imagen de S3 si existe
+        if (exhibicion.imagen) {
+            await eliminarImagenDeS3(exhibicion.imagen);
+        }
+
+        // Eliminar la exhibición de la base de datos
         await exhibicion.deleteOne();
-        res.json({msg: "Exhibicion Eliminada"})
+
+        res.json({ msg: "Exhibicion Eliminada" });
     } catch (error) {
-        console.log(error)
+        console.log(error);
+        res.status(500).json({ msg: "Error al eliminar la exhibición" });
     }
 };
+
 
 const agregarMecraderista = async (req, res) => {};
 
