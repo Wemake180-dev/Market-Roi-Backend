@@ -4,7 +4,7 @@ const PedidoSchema = new mongoose.Schema({
     fecha: {
         type: Date,
         required: true,
-        default: Date.now()
+        default: Date.now
     },
     
     exhibicion: {
