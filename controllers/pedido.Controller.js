@@ -119,7 +119,12 @@ const obtenerPedidos = async (req, res) => {
     try {
         const pedidos = await Pedido.find()
                                     .where("creador").equals(req.usuario)
-                                    .sort({ createdAt: -1});
+                                    .sort({ createdAt: -1})
+                                    .populate({
+                                        path: "exhibicion",
+                                        select: "nombre mercado",
+                                     });
+                                    
 
         if (pedidos.length === 0) {
             return res.status(404).json({ message: "No has creado pedidos aun." });

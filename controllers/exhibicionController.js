@@ -1,11 +1,17 @@
 import Exhibicion from "../models/Exhibiciones.js";
 import Pedido from "../models/Pedidos.js"
 import {eliminarImagenDeS3} from "../helpers/uploads.js"
+import Usuario from "../models/Usuario.js";
 
 
 const obtenerExhibiciones = async (req, res) => {
     try {
-        const exhibiciones = await Exhibicion.find().where("creador").equals(req.usuario);
+        const exhibiciones = await Exhibicion.find({
+            '$or': [
+                { mercaderistas: { $in: req.usuario }},
+                { creador: { $in: req.usuario }},
+            ],
+        })
         res.json(exhibiciones);
         
     } catch (error) {
@@ -53,7 +59,7 @@ const nuevaExhibicion = async (req, res) => {
 const obtenerExhibicion = async (req, res) => {
     try {
         const { id } = req.params;
-        const exhibicion = await Exhibicion.findById(id);
+        const exhibicion = await Exhibicion.findById(id).populate("mercaderistas", "nombre email");
 
         if(!exhibicion){
             const error = new Error("No Existe");
@@ -142,11 +148,75 @@ const eliminarExhibicion = async (req, res) => {
 };
 
 
-const agregarMecraderista = async (req, res) => {};
+const buscarMercaderista = async (req, res) => {
+    const {email} = req.body
+    const usuario = await Usuario.findOne({email}).select('-confirmado -createdAt -password -token -updatedAt -__v');
 
-const eliminarMercaderista = async (req, res) => {};
+    if(!usuario) {
+        const error = new Error ('Usuario no encontrado')
+        return res.status(404).json({ msg: error.message })
+    }
+    res.json(usuario);
+};
 
+const agregarMecraderista = async (req, res) => {
+    const exhibicion = await Exhibicion.findById(req.params.id);
+    
+    if(!exhibicion){
+        const error = new Error("Exhibicion no Encontrada");
+        return res.status(404).json({msg: error.message});
+    }
 
+    if(exhibicion.creador.toString() !== req.usuario._id.toString()){
+        const error = new Error("No tienes permiso para agregar mercaderista a esta exhibicion");
+        return res.status(404).json({msg: error.message});
+    }
+    const {email} = req.body
+    const usuario = await Usuario.findOne({email}).select('-confirmado -createdAt -password -token -updatedAt -__v');
+
+    if(!usuario) {
+        const error = new Error ('Usuario no encontrado')
+        return res.status(404).json({ msg: error.message })
+    }
+
+    //El mercaderista no es el creador de la exhibicion
+    if(exhibicion.creador.toString() === usuario._id.toString()){
+        const error = new Error ('El creador de la exhibición no puede ser mercaderista')
+        return res.status(404).json({ msg: error.message })
+    }
+
+    //Revisar que no este agregado a la exhibicion
+    if(exhibicion.mercaderistas.includes(usuario._id)){
+        const error = new Error ('El usuario ya esta agregado')
+        return res.status(404).json({ msg: error.message })
+    }
+
+    //Agregarlo
+    exhibicion.mercaderistas.push(usuario._id);
+    await exhibicion.save()
+    res.json({msg: 'Usuario Agregado Correctamente'});
+    
+};
+
+const eliminarMercaderista = async (req, res) => {
+    const exhibicion = await Exhibicion.findById(req.params.id);
+    
+    if(!exhibicion){
+        const error = new Error("Exhibicion no Encontrada");
+        return res.status(404).json({msg: error.message});
+    }
+
+    if(exhibicion.creador.toString() !== req.usuario._id.toString()){
+        const error = new Error("No tienes permiso para agregar mercaderista a esta exhibicion");
+        return res.status(404).json({msg: error.message});
+    }
+
+    //Eliminar
+    exhibicion.mercaderistas.pull(req.body.id);
+    await exhibicion.save();
+    res.json({msg: 'Usuario Eliminado Correctamente'});
+
+};
 
 export{
     obtenerExhibicion,
@@ -156,5 +226,6 @@ export{
     eliminarExhibicion,
     agregarMecraderista,
     eliminarMercaderista,
+    buscarMercaderista,
     
 }
