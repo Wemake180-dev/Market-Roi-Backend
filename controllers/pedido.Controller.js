@@ -161,6 +161,37 @@ const obtenerPedidosExhibicion = async (req, res) => {
     
 };
 
+const obtenerSumaTotalPedidosExhibicion = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        // Realiza la consulta en la base de datos para encontrar pedidos con la exhibición específica
+        const pedidos = await Pedido.find({ exhibicion: id });
+
+        // Verifica si se encontraron pedidos
+        if (!pedidos || pedidos.length === 0) {
+            return res.status(404).json({ msg: 'No se encontraron pedidos para la exhibición especificada' });
+        }
+
+        // Calcula la suma total de los pedidos
+        const suma = pedidos.reduce((total, pedido) => total + pedido.total, 0);
+
+        // Redondea la suma total a dos decimales
+        const sumaTotal = parseFloat(suma.toFixed(2));
+        
+        // Obtiene el conteo de los pedidos
+        const conteoPedidos = pedidos.length;
+
+        // Envía la respuesta con la suma total y el conteo de pedidos
+        res.status(200).json({ sumaTotal, conteoPedidos });
+    } catch (error) {
+        // Maneja errores, en caso de que algo salga mal durante la consulta a la base de datos
+        console.error(`Error al obtener la suma total de los pedidos: ${error}`);
+        res.status(500).json({ msg: 'Error del servidor' });
+    }
+};
+
+
 
 const eliminarPedido = async (req, res) => {
     const { id } = req.params;
@@ -191,5 +222,6 @@ export {
     eliminarPedido,
     cambiarEstado,
     obtenerPedidosExhibicion,
-    obtenerPedidos
+    obtenerPedidos,
+    obtenerSumaTotalPedidosExhibicion
 }

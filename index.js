@@ -1,4 +1,4 @@
-import  express  from "express";
+import express  from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import conectarDB from "./config/db.js";
@@ -7,6 +7,7 @@ import exhibicionRoutes from './routes/exhibicionRoutes.js'
 import productoRoutes from './routes/productoRoutes.js';
 import pedidoRoutes from './routes/pedidoRoutes.js';
 import mercadoRoutes from './routes/mercadoRoutes.js';
+import http from "http"
 
 
 const app = express();
@@ -52,8 +53,10 @@ app.use("/api/pedidos", pedidoRoutes);
 app.use("/api/mercados", mercadoRoutes);
 
 
-const PORT = process.env.PORT || 4000;
+const HTTP_PORT = process.env.HTTP_PORT || 4000;
+const IP = process.env.IP;
+const serverHttp = http.createServer(app)
 
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en el puerto ${PORT}`);
+serverHttp.listen(HTTP_PORT, IP, () => {
+    console.log(`Servidor corriendo en el puerto ${HTTP_PORT}`);
 });
