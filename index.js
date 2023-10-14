@@ -1,4 +1,7 @@
 import express  from "express";
+import fs from "fs";
+import http from "http";
+import https from "https";
 import dotenv from "dotenv";
 import cors from "cors";
 import conectarDB from "./config/db.js";
@@ -7,16 +10,20 @@ import exhibicionRoutes from './routes/exhibicionRoutes.js'
 import productoRoutes from './routes/productoRoutes.js';
 import pedidoRoutes from './routes/pedidoRoutes.js';
 import mercadoRoutes from './routes/mercadoRoutes.js';
-import http from "http"
+
+dotenv.config();
+
+
+const httpsServerOptions = {
+    key: fs.readFileSync(process.env.KEY_PATH, 'utf8'),
+    cert: fs.readFileSync(process.env.CERT_PATH, 'utf8'),
+};
 
 
 const app = express();
 app.use(express.json());
 
-dotenv.config();
-
 conectarDB();
-
 
 //Configurar CORS
 const whitelist = [
@@ -46,6 +53,10 @@ app.get('/', function(req, res) {
 });
 
 //Routing
+app.use((req, res, next) => {
+    if (req.secure) next(); else res.redirect(`https://${req.headers.host}${req.url}`);
+});
+
 app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/exhibiciones", exhibicionRoutes);
 app.use("/api/productos", productoRoutes);
@@ -54,9 +65,15 @@ app.use("/api/mercados", mercadoRoutes);
 
 
 const HTTP_PORT = process.env.HTTP_PORT || 4000;
+const HTTPS_PORT = process.env.HTTPS_PORT || 443;
 const IP = process.env.IP;
 const serverHttp = http.createServer(app)
+const serverHttps = https.createServer(httpsServerOptions, app)
 
 serverHttp.listen(HTTP_PORT, IP, () => {
     console.log(`Servidor corriendo en el puerto ${HTTP_PORT}`);
+});
+
+serverHttps.listen(HTTPS_PORT, IP, () => {
+    console.log(`Servidor corriendo en el puerto ${HTTPS_PORT}`);
 });
