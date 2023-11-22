@@ -3,6 +3,7 @@ import Usuario from "../models/Usuario.js";
 import Producto from "../models/Productos.js"
 import Pedido from "../models/Pedidos.js";
 import upload from "../helpers/uploads.js";
+import mongoose from "mongoose";
 
 const calcularTotalYProductos = async (productosStr) => {  //Cambiar el nombre de productos a productosStr para probar desde postman
     let totalPedido = 0;
@@ -38,7 +39,6 @@ const calcularTotalYProductos = async (productosStr) => {  //Cambiar el nombre d
 
 const agregarPedido = async (req, res, next) => {
 
-    // Usamos un try-catch para manejar errores de manera efectiva
     try {
         // Utilizamos el middleware de multer para manejar la subida del archivo
         // 'imagen' es el nombre del campo que contendrá el archivo en la petición HTTP
@@ -74,7 +74,7 @@ const agregarPedido = async (req, res, next) => {
             pedido.productos = productosConPrecio;
             pedido.total = totalPedido;
             pedido.exhibicion = exhibicion;
-            pedido.creador = req.usuario._id;  // Suponiendo que tienes req.usuario._id desde algún middleware de autenticación
+            pedido.creador = req.usuario._id;  
 
             // Guardamos el pedido en la base de datos
             const pedidoAlmacenado = await pedido.save();
@@ -191,6 +191,43 @@ const obtenerSumaTotalPedidosExhibicion = async (req, res) => {
     }
 };
 
+const obtenerConteoYTotalPedidosPorMes = async (req, res) => {
+    const { id } = req.params; // Obtén el valor de 'id' desde la URL
+  
+    try {
+      // Convierte el ID de la exhibición en un ObjectId válido de Mongoose
+      const exhibicionId = new mongoose.Types.ObjectId(id);
+  
+      // Realiza la consulta en la base de datos para obtener el conteo y el total de pedidos por mes de la exhibición con el ID 'exhibicionId'
+      const resultado = await Pedido.aggregate([
+        {
+          $match: {
+            exhibicion: exhibicionId, // Filtra por la exhibición específica
+          },
+        },
+        {
+          $group: {
+            _id: { $month: "$fecha" }, // Agrupa por mes
+            total: { $sum: "$total" }, // Calcula la suma total
+            conteo: { $sum: 1 }, // Calcula el conteo de pedidos
+          },
+        },
+      ]);
+  
+      // Formatea los resultados para facilitar su uso
+      const pedidosPorMes = resultado.map((item) => ({
+        mes: item._id,
+        total: item.total.toFixed(2),
+        conteo: item.conteo,
+      }));
+  
+      res.status(200).json(pedidosPorMes);
+    } catch (error) {
+      console.error(`Error al obtener el conteo y el total de pedidos por mes: ${error}`);
+      res.status(500).json({ msg: 'Error del servidor' });
+    }
+};
+
 
 
 const eliminarPedido = async (req, res) => {
@@ -223,5 +260,6 @@ export {
     cambiarEstado,
     obtenerPedidosExhibicion,
     obtenerPedidos,
-    obtenerSumaTotalPedidosExhibicion
+    obtenerSumaTotalPedidosExhibicion,
+    obtenerConteoYTotalPedidosPorMes
 }

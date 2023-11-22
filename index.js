@@ -27,7 +27,7 @@ conectarDB();
 
 //Configurar CORS
 const whitelist = [
-    process.env.FRONTEND_URL,
+    process.env.FRONTEND_URL_LOCAL,
     process.env.FRONTEND_URL_VERCEL,
     '186.73.164.156'
 ];
@@ -47,6 +47,11 @@ const corsOptions = {
 // };
 
 app.use(cors(corsOptions));
+
+// app.use((req, res, next) => {
+//     res.header('Access-Control-Allow-Origin', '*');
+//     next();
+// });
 
 app.get('/', function(req, res) {
   res.send('Bienvenido');
