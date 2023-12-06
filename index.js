@@ -32,9 +32,9 @@ conectarDB();
 //     '186.73.164.156'
 // ];
 
-// const corsOptions = {
-//     origin: true, // Publico
-// };
+ const corsOptions = {
+     origin: true, // Publico
+};
 
 // const corsOptions = {
 //     origin: function(origin, callback) {
@@ -45,7 +45,7 @@ conectarDB();
 //         }
 //     },
 // };
-app.use(cors());
+app.use(cors(corsOptions));
 
 // app.use((req, res, next) => {
 //     res.header('Access-Control-Allow-Origin', '*');
