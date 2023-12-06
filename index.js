@@ -26,15 +26,15 @@ app.use(express.json());
 conectarDB();
 
 //Configurar CORS
-const whitelist = [
-    process.env.FRONTEND_URL_LOCAL,
-    process.env.FRONTEND_URL_VERCEL,
-    '186.73.164.156'
-];
+// const whitelist = [
+//     process.env.FRONTEND_URL_LOCAL,
+//     process.env.FRONTEND_URL_VERCEL,
+//     '186.73.164.156'
+// ];
 
-const corsOptions = {
-    origin: true, // Publico
-};
+// const corsOptions = {
+//     origin: true, // Publico
+// };
 
 // const corsOptions = {
 //     origin: function(origin, callback) {
@@ -45,8 +45,7 @@ const corsOptions = {
 //         }
 //     },
 // };
-
-app.use(cors(corsOptions));
+app.use(cors());
 
 // app.use((req, res, next) => {
 //     res.header('Access-Control-Allow-Origin', '*');
