@@ -2,6 +2,7 @@ import Exhibicion from "../models/Exhibiciones.js";
 import Pedido from "../models/Pedidos.js"
 import {eliminarImagenDeS3} from "../helpers/uploads.js"
 import Usuario from "../models/Usuario.js";
+import mongoose from "mongoose";
 
 
 const obtenerExhibiciones = async (req, res) => {
@@ -218,6 +219,95 @@ const eliminarMercaderista = async (req, res) => {
 
 };
 
+const reporteExhibicion = async (req, res) => {
+    const reportProducts = await Pedido.aggregate([
+        {
+            $match:
+            {
+                exhibicion: new mongoose.Types.ObjectId(
+                    req.params.id
+                ),
+            },
+        },
+        {
+            $unwind:
+            {
+                path: "$productos",
+            },
+        },
+        {
+            $replaceRoot:
+            {
+                newRoot: "$productos",
+            },
+        },
+        {
+            $group:
+            {
+                _id: "$nombre",
+                total: {
+                    $sum: "$subtotal",
+                },
+                count: {
+                    $sum: "$cantidad",
+                },
+            },
+        },
+        {
+            $sort:
+            {
+                total: -1,
+            },
+          }
+    ]).exec();
+
+    const ventas = await Pedido.aggregate([
+        {
+          $group:
+            {
+              _id: "",
+              total: {
+                $sum: "$total",
+              },
+            },
+        },
+    ]).exec();
+
+    const ventasSemana = await Pedido.aggregate([
+        {
+            $sort:
+            {
+                createdAt: -1,
+            },
+        },
+        {
+            $group:
+            {
+                _id: {
+                    $week: "$createdAt",
+                },
+                total: {
+                    $sum: "$total",
+                },
+            },
+        },
+        {
+            $sort:
+            {
+                _id: -1,
+            },
+        },
+        {
+            $limit:
+                8,
+        },
+    ]).exec();
+
+    res.json({reportProducts, ventas: {
+        total: ventas[0].total,
+    }, ventasSemana });
+}
+
 export{
     obtenerExhibicion,
     nuevaExhibicion,
@@ -227,5 +317,5 @@ export{
     agregarMecraderista,
     eliminarMercaderista,
     buscarMercaderista,
-    
+    reporteExhibicion
 }

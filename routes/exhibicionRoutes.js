@@ -8,6 +8,7 @@ import {
     agregarMecraderista,
     eliminarMercaderista,
     buscarMercaderista,
+    reporteExhibicion
 } from '../controllers/exhibicionController.js';
 import checkAuth from '../middleware/checkAuth.js';
 import upload from "../helpers/uploads.js";
@@ -25,6 +26,7 @@ router
     .put(checkAuth, editarExhibicion)
     .delete(checkAuth, eliminarExhibicion);   
     
+router.get("/:id/reporte", checkAuth, reporteExhibicion);   
 router.post("/mercaderistas", checkAuth, buscarMercaderista);   
 router.post("/mercaderistas/:id", checkAuth, agregarMecraderista);  
 router.post("/eliminar-mercaderista/:id", checkAuth, eliminarMercaderista);   
