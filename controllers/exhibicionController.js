@@ -294,7 +294,7 @@ const reporteExhibicion = async (req, res) => {
         {
             $sort:
             {
-                _id: -1,
+                total: -1,
             },
         },
         {
